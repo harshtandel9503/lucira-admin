@@ -200,6 +200,14 @@ export default function ProductDiscountsPage() {
 
   const handleToggleDrawer = async (discount, showInDrawer) => {
     setDiscounts((prev) => prev.map((d) => (d.id === discount.id ? { ...d, showInDrawer } : d)));
+
+    // A brand-new, not-yet-saved rule has no server record to PATCH — just
+    // update local state; the flag rides along with the next "Save & sync"
+    // (which already sends showInDrawer as part of the full rule payload).
+    // Shopify-origin synced rules are real server records too (just without
+    // lastSyncedAt, which only "dashboard save" sets), so only `isNew` gates this.
+    if (discount.isNew) return;
+
     try {
       const res = await fetch(`${BASE_URL}/api/settings/product-discounts/${discount.id}/drawer`, {
         method: "PATCH",
@@ -694,7 +702,9 @@ export default function ProductDiscountsPage() {
                             <Toggle checked={discount.showInDrawer} onChange={(val) => handleToggleDrawer(discount, val)} />
                           </label>
                           <p className="text-xs text-gray-500 mt-2" style={{ fontSize: "12px", color: "rgb(165, 165, 165)" }}>
-                            Controls whether this code appears in the cart's "Saving Zone" drawer for customers to grab.
+                            {discount.method === "automatic"
+                              ? "On: this becomes a claim-gated discount — it stops applying silently and instead shows a \"Claim\" card in the drawer and a banner outside it (whichever eligible discount has the highest value wins the banner). Off: applies silently to matching items, no drawer/banner presence."
+                              : "Controls whether this code appears in the cart's \"Saving Zone\" drawer for customers to grab."}
                           </p>
                         </div>
 
