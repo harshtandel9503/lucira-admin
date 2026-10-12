@@ -42,6 +42,7 @@ export default function StoreCard({
   total,
   serviceCatalog,
   facilitySuggestions,
+  locations = [],
   onChange,
   onRemove,
   onMove,
@@ -376,7 +377,7 @@ export default function StoreCard({
           {/* ── Location data ──────────────────────────────────────────── */}
           <section>
             <SectionTitle hint="Used to rank stores by distance on the store locator. Filled in for you when you import a Shopify location.">
-              Location data
+              Location data &amp; ERP Grouping
             </SectionTitle>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
@@ -388,12 +389,43 @@ export default function StoreCard({
                 <TextInput value={store?.geo?.lng ?? ""} onChange={(v) => setGeo("lng", v === "" ? null : v)} placeholder="77.5701" />
               </div>
               <div>
-                <FieldLabel hint="read-only — set by importing a location">SHOPIFY LOCATION</FieldLabel>
-                <div className="px-4 py-3 bg-field border border-hairline-soft rounded-[8px] text-xs text-ink-muted truncate">
-                  {store.shopifyLocationId || "Not linked"}
-                </div>
+                <FieldLabel hint="Link Shopify Location">SHOPIFY LOCATION</FieldLabel>
+                <Select
+                  value={store.shopifyLocationId || ""}
+                  onChange={(v) => {
+                    const matchedLoc = (locations || []).find((l) => l.shopifyId === v);
+                    const patch = { shopifyLocationId: v };
+                    if (matchedLoc) {
+                      if (matchedLoc.latitude && !store.geo?.lat) {
+                        patch.geo = { ...(store.geo || {}), lat: matchedLoc.latitude, lng: matchedLoc.longitude };
+                      }
+                    }
+                    set(patch);
+                  }}
+                  options={[
+                    { value: "", label: "Not linked" },
+                    ...(locations || []).map((l) => ({
+                      value: l.shopifyId,
+                      label: `${l.name} (${String(l.shopifyId).replace("gid://shopify/Location/", "")})`,
+                    })),
+                  ]}
+                />
               </div>
             </div>
+
+            <div className="mt-4">
+              <FieldLabel hint="ERP location IDs or filter codes grouped into this store on PLP, Search, and PDP (e.g. Location 92532244698, 92532244698)">
+                ERP LOCATION IDS &amp; FILTER GROUPING VALUES (COMMA-SEPARATED)
+              </FieldLabel>
+              <TextInput
+                value={Array.isArray(store.locationAliases) ? store.locationAliases.join(", ") : (store.locationAliases || "")}
+                onChange={(v) => set({
+                  locationAliases: v.split(",").map((s) => s.trim()).filter(Boolean),
+                })}
+                placeholder="e.g. Location 92532244698, 92532244698"
+              />
+            </div>
+
             <div className="mt-4 space-y-3">
               <Toggle
                 checked={store.visitable !== false}

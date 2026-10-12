@@ -35,6 +35,7 @@ const blankStore = (patch = {}) => ({
   geo: { lat: null, lng: null },
   visitable: true,
   shopifyLocationId: "",
+  locationAliases: [],
   surfaces: {
     collectionBanner: true,
     homepage: true,
@@ -301,6 +302,7 @@ export default function StoresPage() {
                 total={stores.length}
                 serviceCatalog={serviceCatalog}
                 facilitySuggestions={facilitySuggestions}
+                locations={locations}
                 defaultOpen={store.id === newStoreId}
                 onChange={(next) => update(index, next)}
                 onRemove={() => remove(index)}

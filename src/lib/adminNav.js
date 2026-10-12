@@ -69,6 +69,12 @@ export const NAV_SECTIONS = [
         href: '/dashboard/wishlists',
         description: 'Monitor customer wishlists and saved items.',
       },
+      {
+        title: 'Stores',
+        icon: Store,
+        href: '/dashboard/stores',
+        description: 'Update physical store locations, Shopify locations, ERP grouping aliases, and details.',
+      },
     ],
   },
   {
