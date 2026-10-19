@@ -328,9 +328,19 @@ export default function UserTrackingPage() {
         const item = row.original;
         const name = (item.firstName || item.lastName) ? `${item.firstName || ''} ${item.lastName || ''}`.trim() : null;
 
-        if (item.type === 'scratch_card_view' || item.type === 'spin_wheel_view') {
+        const typeLower = (item.type || '').toLowerCase();
+        const isPopupView = typeLower.endsWith('_view') && !['product_view', 'scheme_view'].includes(typeLower);
+        if (isPopupView) {
           const isViewOnly = viewOnlySessionIds.has(item.sessionId);
-          const popupType = item.type === 'scratch_card_view' ? 'Scratch Card' : 'Spin the Wheel';
+          const popupType = typeLower === 'scratch_card_view' 
+            ? 'Scratch Card' 
+            : typeLower === 'spin_wheel_view' || typeLower === 'wheel_view' 
+            ? 'Spin the Wheel' 
+            : typeLower === 'atc_login_view'
+            ? 'ATC Login'
+            : typeLower === 'cart_login_view'
+            ? 'Cart Login'
+            : typeLower.replace(/_view$/i, '').replace(/_/g, ' ').toUpperCase();
           return (
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
@@ -402,7 +412,7 @@ export default function UserTrackingPage() {
         }
 
         const isScratch = item.rewardSource === 'scratch_card';
-        const isView = type === 'SCRATCH_CARD_VIEW' || type === 'SPIN_WHEEL_VIEW';
+        const isView = (type.endsWith('_VIEW') || type.endsWith('_view')) && !['PRODUCT_VIEW', 'SCHEME_VIEW', 'product_view', 'scheme_view'].includes(type);
         const isViewOnly = isView && viewOnlySessionIds.has(item.sessionId);
 
         return (
@@ -497,12 +507,22 @@ export default function UserTrackingPage() {
           );
         }
 
-        if (item.type === 'scratch_card_view' || item.type === 'spin_wheel_view') {
+        if ((item.type || '').toLowerCase().endsWith('_view') && !['product_view', 'scheme_view'].includes((item.type || '').toLowerCase())) {
           const duration = item.metadata?.durationSeconds ? `${item.metadata.durationSeconds}s` : null;
+          const typeLower = (item.type || '').toLowerCase();
+          const popupTitle = typeLower === 'scratch_card_view' 
+            ? 'Scratch Card' 
+            : typeLower === 'spin_wheel_view' 
+            ? 'Spin Wheel' 
+            : typeLower === 'atc_login_view'
+            ? 'ATC Login'
+            : typeLower === 'cart_login_view'
+            ? 'Cart Login'
+            : typeLower.replace(/_view$/i, '').replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
           return (
             <div className="flex flex-col gap-0.5">
               <span className="text-xs font-bold text-ink">
-                {item.type === 'scratch_card_view' ? 'Scratch Card' : 'Spin Wheel'} Popup
+                {popupTitle} Popup
               </span>
               {duration && <span className="text-[10px] text-ink-muted">On screen: {duration}</span>}
             </div>
