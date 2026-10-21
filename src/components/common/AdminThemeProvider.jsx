@@ -19,15 +19,25 @@ export function useAdminTheme() {
  * read them) flips without needing its own dark variant.
  */
 export default function AdminThemeProvider({ children }) {
+  const [isDark, setIsDark] = useState(false);
+
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_THEME, 'light');
-    } catch {}
-    document.documentElement.setAttribute('data-theme', 'light');
+    setIsDark(localStorage.getItem(STORAGE_THEME) === 'dark');
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  }, [isDark]);
+
+  const toggleTheme = useCallback(() => {
+    setIsDark((prev) => {
+      localStorage.setItem(STORAGE_THEME, prev ? 'light' : 'dark');
+      return !prev;
+    });
   }, []);
 
   return (
-    <AdminThemeContext.Provider value={{ isDark: true, toggleTheme: () => {} }}>
+    <AdminThemeContext.Provider value={{ isDark, toggleTheme }}>
       {children}
     </AdminThemeContext.Provider>
   );
