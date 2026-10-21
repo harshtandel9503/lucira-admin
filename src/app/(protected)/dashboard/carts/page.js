@@ -582,7 +582,7 @@ export default function AbandonedCartsPage() {
                   }`}
                   title="Filter by Registered Customers"
                 >
-                  {customerType === 'CUSTOMER' ? 'Active ✓' : 'Filter'}
+                  {customerType === 'CUSTOMER' ? 'Active ✓' : 'Filter →'}
                 </button>
                 <span className="w-7 h-7 rounded-lg bg-[#e4f8ec] text-[#007a5a] flex items-center justify-center">
                   <User size={14} />
@@ -649,7 +649,7 @@ export default function AbandonedCartsPage() {
                 />
               </div>
               <div className="flex items-center justify-between text-[11px] text-[#6d7175] pt-0.5">
-                <span>{(stats.registered?.newCarts || 0).toLocaleString()} new · {(stats.registered?.returningCarts || 0).toLocaleString()} returning</span>
+                <span>Identified with email or phone</span>
                 <span className="font-semibold text-emerald-700">Accounts Verified</span>
               </div>
             </div>
@@ -695,7 +695,7 @@ export default function AbandonedCartsPage() {
                   }`}
                   title="Filter by Guest Users"
                 >
-                  {customerType === 'GUEST' ? 'Active ✓' : 'Filter'}
+                  {customerType === 'GUEST' ? 'Active ✓' : 'Filter →'}
                 </button>
                 <span className="w-7 h-7 rounded-lg bg-[#eff6ff] text-[#2563eb] flex items-center justify-center">
                   <Globe size={14} />
@@ -762,7 +762,7 @@ export default function AbandonedCartsPage() {
                 />
               </div>
               <div className="flex items-center justify-between text-[11px] text-[#6d7175] pt-0.5">
-                <span>{(stats.guest?.newCarts || 0).toLocaleString()} new · {(stats.guest?.returningCarts || 0).toLocaleString()} returning</span>
+                <span>Visitors without account</span>
                 <span className="font-semibold text-blue-700">Browser Sessions</span>
               </div>
             </div>
